@@ -1,0 +1,166 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/archivo/wdth.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    /* Archivo has a width axis (62–125%): expanded for the name and the pairing code, condensed for
+       camera read-outs and frame numbers, normal for everything else. */
+    --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+    --color-tally: var(--tally);
+    --color-standby: var(--standby);
+    --color-video: var(--video);
+    --color-scrim: var(--scrim);
+    --color-on-video: var(--on-video);
+    --color-qr-bg: var(--qr-bg);
+    --color-qr-fg: var(--qr-fg);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Light: a light table with prints laid on it, in blue-black ink. Red is the tally light: it only
+   ever means a camera is live or taking a picture. */
+:root {
+    --tally: #e1342a;
+    --standby: #b87700;
+    --video: #000;
+    --scrim: rgb(0 0 0 / 0.55);
+    --on-video: #fff;
+    --qr-bg: #fff;
+    --qr-fg: #1a2332;
+    --background: #f5f7f7;
+    --foreground: #1a2332;
+    --card: #fff;
+    --card-foreground: #1a2332;
+    --popover: #fff;
+    --popover-foreground: #1a2332;
+    --primary: #1a2332;
+    --primary-foreground: #f5f7f7;
+    --secondary: #e6ebed;
+    --secondary-foreground: #1a2332;
+    --muted: #e6ebed;
+    --muted-foreground: #566273;
+    --accent: #dde4e8;
+    --accent-foreground: #1a2332;
+    --destructive: #b42318;
+    --border: #d3dadf;
+    --input: #c6ced4;
+    --ring: #1a2332;
+    --radius: 0.5rem;
+}
+
+/* Dark: the edit suite. Same ink, inverted; the tally gets a little brighter. */
+.dark {
+    --tally: #ff453a;
+    --standby: #f0b23b;
+    --qr-fg: #131a24;
+    --background: #131a24;
+    --foreground: #e4e9ef;
+    --card: #19212d;
+    --card-foreground: #e4e9ef;
+    --popover: #19212d;
+    --popover-foreground: #e4e9ef;
+    --primary: #e4e9ef;
+    --primary-foreground: #131a24;
+    --secondary: #222c3a;
+    --secondary-foreground: #e4e9ef;
+    --muted: #1e2734;
+    --muted-foreground: #94a1b3;
+    --accent: #263243;
+    --accent-foreground: #e4e9ef;
+    --destructive: #ff6b5e;
+    --border: #2a3546;
+    --input: #354255;
+    --ring: #e4e9ef;
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    html,
+    body,
+    #root {
+        height: 100%;
+    }
+    body {
+        @apply bg-background text-foreground;
+        overscroll-behavior: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    html {
+        @apply font-sans;
+        font-feature-settings: "tnum" 0;
+    }
+}
+
+/* Viewfinder corners close in and go red when a camera's picture arrives (focus lock). */
+@keyframes bracket-lock {
+    0% {
+        translate: 0 0;
+    }
+    40%,
+    75% {
+        translate: calc(var(--dx) * 10px) calc(var(--dy) * 10px);
+        border-color: var(--tally);
+        opacity: 1;
+    }
+    100% {
+        translate: calc(var(--dx) * 10px) calc(var(--dy) * 10px);
+        border-color: var(--tally);
+        opacity: 0;
+    }
+}
+
+@keyframes shutter-flash {
+    from {
+        opacity: 0.85;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@utility animate-lock {
+    animation: bracket-lock 900ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+@utility animate-flash {
+    animation: shutter-flash 380ms ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-lock {
+        animation-duration: 600ms;
+        --dx: 0;
+        --dy: 0;
+    }
+    .animate-flash {
+        animation-duration: 200ms;
+    }
+}

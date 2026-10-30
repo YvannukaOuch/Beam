@@ -1,0 +1,30 @@
+[Unit]
+Description=Beam pairing server (cam.sraas.dev)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=cam
+WorkingDirectory=/opt/cam
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=8794
+# Sessions are written here on restart and read back, so a deploy doesn't drop anyone.
+Environment=DATA_DIR=/var/lib/cam
+Environment=STUN_URLS=stun:task.sraas.dev:3478
+# Peer-to-peer only, on purpose: no TURN relay, so video never goes through this server. Networks that
+# block direct connections get a message instead (to relay, add EnvironmentFile=/etc/task/turn.env).
+# Self-contained bundle (scripts/build-server.mjs): runs on the system Node 18, no node_modules.
+ExecStart=/usr/bin/node /opt/cam/dist-server/index.mjs
+Restart=always
+RestartSec=3
+# Shared 2 GB box: this only passes small messages around.
+MemoryMax=150M
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/cam
+
+[Install]
+WantedBy=multi-user.target
